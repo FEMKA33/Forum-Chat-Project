@@ -15,7 +15,7 @@ public class ApplicationController {
             model.addAttribute("username", principal.getName());
             return "redirect:/discussions";
         }
-        return "index";
+        return "login";
     }
 
     @GetMapping("/login")

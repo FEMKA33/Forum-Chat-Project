@@ -4,7 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e8efdd3c-9760-4092-bb45-8a8ac6c803d7" name="Changes" comment="" />
+    <list default="true" id="e8efdd3c-9760-4092-bb45-8a8ac6c803d7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/model/MessageLike.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/model/MessageReaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/model/ReactionType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/MessageLikeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/MessageReactionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/ChatWebSocketHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/ChatWebSocketHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/ApplicationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/ApplicationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionWebSocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/DiscussionWebSocketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/ChatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/ChatMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/DiscussionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/DiscussionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/model/OutgoingMessageDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/model/OutgoingMessageDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/repository/DiscussionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/DiscussionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/DiscussionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/DiscussionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/discussion-view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/discussion-view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/discussions.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/discussions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/discussion-view.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/discussion-view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/discussions.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/discussions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/templates/login.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,13 +85,13 @@
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "X:/somethings/Java/practic_egerev/src/test/java",
-    "last_opened_file_path": "X:/somethings/Java/FEMKA33-Project",
+    "last_opened_file_path": "X:/somethings/СТОИ/lab5",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
@@ -417,6 +443,29 @@
       <workItem from="1760176871673" duration="79000" />
       <workItem from="1760773780707" duration="175000" />
       <workItem from="1760774143155" duration="1541000" />
+      <workItem from="1760777760220" duration="1893000" />
+      <workItem from="1760794875571" duration="1503000" />
+      <workItem from="1761925681714" duration="1171000" />
+      <workItem from="1761981113856" duration="7901000" />
+      <workItem from="1762108083199" duration="1397000" />
+      <workItem from="1762119046994" duration="645000" />
+      <workItem from="1762184722121" duration="1911000" />
+      <workItem from="1762191919437" duration="1399000" />
+      <workItem from="1762195509427" duration="605000" />
+      <workItem from="1762253098753" duration="102000" />
+      <workItem from="1762776082009" duration="443000" />
+      <workItem from="1762776644539" duration="1391000" />
+      <workItem from="1762782406633" duration="1245000" />
+      <workItem from="1762966143742" duration="873000" />
+      <workItem from="1762967128664" duration="890000" />
+      <workItem from="1763123139987" duration="851000" />
+      <workItem from="1763190765601" duration="428000" />
+      <workItem from="1763191363708" duration="5907000" />
+      <workItem from="1763393327215" duration="28000" />
+      <workItem from="1764349638954" duration="6021000" />
+      <workItem from="1764400418897" duration="863000" />
+      <workItem from="1764401701580" duration="1363000" />
+      <workItem from="1764594220188" duration="508000" />
     </task>
     <servers />
   </component>

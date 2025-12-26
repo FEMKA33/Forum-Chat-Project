@@ -2,39 +2,333 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
-    <title th:text="${discussion.title}">Discussion</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <title th:text="${discussion.title} + ' | Парилка'">Discussion</title>
+
+    <meta name="description" th:content="${discussion.description}">
+    <meta name="keywords" th:content="${discussion.description}">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical"
+          th:href="'https://your-domain.com/discussions/' + ${discussion.id}" />
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" th:content="${discussion.title}">
+    <meta property="og:description" th:content="${discussion.description}">
+    <meta property="og:url" th:content="'https://your-domain.com/discussions/' + ${discussion.id}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:content="${discussion.title}">
+    <meta name="twitter:description" th:content="${discussion.description}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.2/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <style>
-        .message-area { height: 60vh; overflow-y: auto; background: #f8f9fa; padding: 12px; border-radius: 6px; }
-        .message { margin-bottom: 10px; }
-        .message .meta { font-size: 0.85rem; color: #555; }
+        body { background-color: #f8f9fa; }
+
+        .header-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #0d6efd;
+            border: 1px solid #0d6efd;
+            border-radius: 6px;
+            padding: 6px 10px;
+            transition: background-color 0.12s, color 0.12s;
+        }
+
+        .back-btn:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .hashtags span {
+            background-color: #e9ecef;
+            color: #0d6efd;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+
+        .comment {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #e6e6e6;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .comment .meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .comment .content {
+            margin-top: 6px;
+            white-space: pre-wrap;
+        }
+
+        .comment .comment-actions {
+            opacity: 0;
+            transform: translateY(2px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            margin-top: 8px;
+        }
+
+        .comment:hover .comment-actions {
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        .comment .btn-like, .comment .btn-dislike {
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.9rem;
+        }
+
+        .replies {
+            margin-top: 8px;
+            margin-left: 16px;
+        }
+
+        .show-replies-btn {
+            background: transparent;
+            border: none;
+            color: #0d6efd;
+            padding: 0;
+            margin: 6px 0 10px 0;
+        }
+
+        .reply-form {
+            margin-top: 8px;
+        }
+
+        .small-muted {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .message-area {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
     </style>
 </head>
-<body class="container mt-4">
-<a href="/discussions" class="btn btn-link">← Назад</a>
-<h1 th:text="${discussion.title}">Title</h1>
-<p th:text="${discussion.description}">Description</p>
-<div class="mb-3">
-    <small>Автор: <span th:text="${discussion.author.username}">author</span>, создано: <span th:text="${#temporals.format(discussion.createdAt, 'yyyy-MM-dd HH:mm')}">date</span></small>
-</div>
+<body>
+<main class="container mt-4">
 
-<div id="messages" class="message-area mb-3">
-    <div th:each="m : ${messages}" class="message">
-        <div><strong th:text="${m.sender.username}">sender</strong> <span class="meta" th:text="${#temporals.format(m.createdAt, 'HH:mm dd.MM.yyyy')}">time</span></div>
-        <div th:text="${m.content}">content</div>
+    <article itemscope itemtype="https://schema.org/DiscussionForumPosting">
+
+    <div class="header-line">
+        <a href="/discussions" class="back-btn">← Назад</a>
+        <div>
+            <h1 itemprop="headline" th:text="${discussion.title}" class="h4 mb-0">Title</h1>
+
+            <div class="small-muted" style="margin-top:4px;">
+                Автор:
+                <span itemprop="author" th:text="${discussion.author.username}">author</span>
+                •
+                <time itemprop="datePublished"
+                      th:datetime="${discussion.createdAt}"
+                      th:text="${#temporals.format(discussion.createdAt, 'yyyy-MM-dd HH:mm')}">
+                    date
+                </time>
+            </div>
+        </div>
     </div>
+
+    </article>
+
+<div class="hashtags mb-3">
+    <span th:each="tag : ${#strings.arraySplit(discussion.description, ' ')}"
+          th:if="${#strings.isEmpty(tag) == false}"
+          th:text="'#' + ${tag}">
+    </span>
 </div>
 
-<div class="input-group mb-4">
-    <input id="messageInput" class="form-control" placeholder="Написать сообщение...">
-    <button id="sendBtn" class="btn btn-primary">Отправить</button>
+<div class="row">
+    <div class="col-12">
+        <div id="commentsContainer" class="message-area">
+            <div th:each="m : ${messages}"
+                 th:attr="data-id=${m.id},data-parent=${m.parent != null ? m.parent.id : ''},data-likes=${m.likes},data-dislikes=${m.dislikes}"
+                 class="comment" th:id="${'msg-' + m.id}">
+                <div>
+                    <strong th:text="${m.sender.username}">sender</strong>
+                    <span class="meta" th:text="${#temporals.format(m.createdAt, 'HH:mm dd.MM.yyyy')}">time</span>
+                </div>
+                <div class="content" th:text="${m.content}">content</div>
+
+                <div class="comment-actions d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-secondary btn-reply" type="button">Ответить</button>
+                    <button class="btn btn-sm btn-like btn-outline-success" type="button" data-id="" onclick="likeMessage(this)">
+                        👍 <span class="ms-1 like-count" th:text="${m.likes}">0</span>
+                    </button>
+                    <button class="btn btn-sm btn-dislike btn-outline-danger" type="button" data-id="" onclick="dislikeMessage(this)">
+                        👎 <span class="ms-1 dislike-count" th:text="${m.dislikes}">0</span>
+                    </button>
+                </div>
+
+                <div class="replies"></div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label class="form-label">Написать комментарий</label>
+            <div class="input-group">
+                <input id="mainInput" type="text" class="form-control" placeholder="Написать сообщение..." />
+                <button id="mainSend" class="btn btn-primary" type="button">Отправить</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script th:inline="javascript">
     const discussionId = [[${discussion.id}]];
     const username = [[${username != null}]] ? '[[${username}]]' : 'anonymous';
+
+    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    function $(id){ return document.getElementById(id); }
+    function createElementFromHTML(htmlString) {
+        const div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
+        return div.firstElementChild;
+    }
+
+    (function organizeComments() {
+        const all = Array.from(document.querySelectorAll('#commentsContainer > .comment'));
+        const idToNode = new Map();
+        const roots = [];
+
+        all.forEach(node => {
+            const id = node.getAttribute('data-id');
+            const parent = node.getAttribute('data-parent');
+            idToNode.set(id, node);
+
+            // set data-id on like/dislike buttons for convenience
+            const likeBtn = node.querySelector('.btn-like');
+            const dislikeBtn = node.querySelector('.btn-dislike');
+            if (likeBtn) likeBtn.setAttribute('data-id', id);
+            if (dislikeBtn) dislikeBtn.setAttribute('data-id', id);
+
+            node.querySelector('.replies').innerHTML = '';
+        });
+
+        all.forEach(node => {
+            const id = node.getAttribute('data-id');
+            const parent = node.getAttribute('data-parent');
+            if (parent && parent !== '') {
+                const parentNode = idToNode.get(parent);
+                if (parentNode) {
+                    parentNode.querySelector('.replies').appendChild(node);
+                } else {
+                    roots.push(node);
+                }
+            } else {
+                roots.push(node);
+            }
+        });
+
+        const container = $('commentsContainer');
+        container.innerHTML = '';
+        roots.forEach(root => {
+            container.appendChild(root);
+
+            const repliesEl = root.querySelector('.replies');
+            if (repliesEl && repliesEl.children.length > 0) {
+                const count = repliesEl.children.length;
+                const btn = document.createElement('button');
+                btn.className = 'show-replies-btn';
+                btn.textContent = `Показать ${count} ответов`;
+                btn.onclick = function() {
+                    const visible = repliesEl.style.display === 'block';
+                    repliesEl.style.display = visible ? 'none' : 'block';
+                    btn.textContent = visible ? `Показать ${count} ответов` : `Скрыть ответы`;
+                };
+                repliesEl.style.display = 'none';
+                root.appendChild(btn);
+                root.appendChild(repliesEl);
+            }
+        });
+    })();
+
+    let openReplyForm = null; // {parentNode, formEl}
+
+    function closeOpenReply() {
+        if (!openReplyForm) return;
+        openReplyForm.formEl.remove();
+        openReplyForm = null;
+    }
+
+    document.addEventListener('click', function(e){
+        const rb = e.target.closest('.btn-reply');
+        if (rb) {
+            const commentEl = rb.closest('.comment');
+            if (!commentEl) return;
+            closeOpenReply();
+
+            const form = document.createElement('div');
+            form.className = 'reply-form';
+            form.innerHTML = `
+                <div class="input-group mt-2">
+                    <input type="text" class="form-control reply-input" placeholder="Ответить...">
+                    <button class="btn btn-primary btn-send-reply" type="button">Ответить</button>
+                    <button class="btn btn-outline-secondary btn-cancel-reply" type="button">Отмена</button>
+                </div>
+            `;
+            commentEl.appendChild(form);
+            openReplyForm = { parentNode: commentEl, formEl: form };
+
+            const input = form.querySelector('.reply-input');
+            input.focus();
+
+            form.querySelector('.btn-send-reply').addEventListener('click', function() {
+                const text = input.value.trim();
+                if (!text) return;
+                const parentId = commentEl.getAttribute('data-id');
+                sendMessage(text, parentId);
+                closeOpenReply();
+            });
+
+            form.querySelector('.btn-cancel-reply').addEventListener('click', function() {
+                closeOpenReply();
+            });
+
+            e.preventDefault();
+            return;
+        }
+    });
+
+    $('mainSend').addEventListener('click', function() {
+        const text = $('mainInput').value.trim();
+        if (!text) return;
+        sendMessage(text, null);
+        $('mainInput').value = '';
+    });
+    $('mainInput').addEventListener('keypress', function(e){
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $('mainSend').click();
+        }
+    });
 
     const socket = new SockJS('/ws');
     const stompClient = Stomp.over(socket);
@@ -43,52 +337,164 @@
         console.log('WS connected: ' + frame);
         stompClient.subscribe('/topic/discussions/' + discussionId, function(msg) {
             const d = JSON.parse(msg.body);
-            appendMessage(d);
+            handleIncomingMessage(d);
         });
     });
 
-    function appendMessage(m) {
-        const area = document.getElementById('messages');
-        const el = document.createElement('div');
-        el.className = 'message';
-        el.innerHTML = `<div><strong>${m.sender}</strong> <span class="meta">${new Date(m.createdAt).toLocaleString()}</span></div><div>${m.content}</div>`;
-        area.appendChild(el);
-        area.scrollTop = area.scrollHeight;
+    function sendMessage(text, parentId) {
+        const payload = { sender: username, content: text };
+        if (parentId) payload.parentId = Number(parentId);
+
+        stompClient.send('/app/discussions/' + discussionId + '/send', {}, JSON.stringify(payload));
     }
 
-    document.getElementById('sendBtn').addEventListener('click', send);
-    document.getElementById('messageInput').addEventListener('keypress', function(e){
-        if (e.key==='Enter') send();
+    function handleIncomingMessage(m) {
+        const node = document.createElement('div');
+        node.className = 'comment';
+        node.setAttribute('data-id', m.id);
+        node.setAttribute('data-parent', m.parentId ? m.parentId : '');
+        node.setAttribute('data-likes', m.likes ? m.likes : 0);
+        node.setAttribute('data-dislikes', m.dislikes ? m.dislikes : 0);
+        node.id = 'msg-' + m.id;
+
+        node.innerHTML = `
+            <div>
+                <strong>${escapeHtml(m.sender)}</strong>
+                <span class="meta">${new Date(m.createdAt).toLocaleString()}</span>
+            </div>
+            <div class="content">${escapeHtml(m.content)}</div>
+            <div class="comment-actions d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-secondary btn-reply" type="button">Ответить</button>
+                <button class="btn btn-sm btn-like btn-outline-success" type="button" data-id="${m.id}" onclick="likeMessage(this)">
+                    👍 <span class="ms-1 like-count">${m.likes ? m.likes : 0}</span>
+                </button>
+                <button class="btn btn-sm btn-dislike btn-outline-danger" type="button" data-id="${m.id}" onclick="dislikeMessage(this)">
+                    👎 <span class="ms-1 dislike-count">${m.dislikes ? m.dislikes : 0}</span>
+                </button>
+            </div>
+            <div class="replies"></div>
+        `;
+
+
+        if (m.parentId) {
+            const parentEl = document.querySelector('#commentsContainer .comment[data-id="' + m.parentId + '"]');
+            if (parentEl) {
+                let repliesEl = parentEl.querySelector('.replies');
+                if (!repliesEl) {
+                    repliesEl = document.createElement('div');
+                    repliesEl.className = 'replies';
+                    parentEl.appendChild(repliesEl);
+                }
+                let btn = parentEl.querySelector('.show-replies-btn');
+                if (!btn) {
+                    const count = repliesEl.children.length + 1;
+                    btn = document.createElement('button');
+                    btn.className = 'show-replies-btn';
+                    btn.textContent = `Показать ${count} ответов`;
+                    btn.onclick = function(){
+                        const visible = repliesEl.style.display === 'block';
+                        repliesEl.style.display = visible ? 'none' : 'block';
+                        btn.textContent = visible ? `Показать ${count} ответов` : `Скрыть ответы`;
+                    };
+                    repliesEl.style.display = 'none';
+                    parentEl.appendChild(btn);
+                } else {
+                    const currentText = btn.textContent || '';
+                    const matches = currentText.match(/\d+/);
+                    const newCount = (matches ? (Number(matches[0]) + 1) : (repliesEl.children.length + 1));
+                    btn.textContent = `Показать ${newCount} ответов`;
+                }
+
+                repliesEl.appendChild(node);
+            } else {
+                $('commentsContainer').appendChild(node);
+            }
+        } else {
+            $('commentsContainer').appendChild(node);
+        }
+    }
+
+    async function likeMessage(btn) {
+        const id = btn.getAttribute('data-id');
+        const res = await fetch(`/api/discussions/messages/${id}/like`, { method: 'POST',
+            headers: {
+                [header]: token
+            } }).then(() => location.reload());
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        const comment = btn.closest(".comment");
+        comment.querySelector(".like-count").textContent = data.likes;
+        comment.querySelector(".dislike-count").textContent = data.dislikes;
+
+        toggleButtonsState(comment, data.userLiked, data.userDisliked);
+    }
+
+    async function dislikeMessage(btn) {
+        const id = btn.getAttribute('data-id');
+        const res = await fetch(`/api/discussions/messages/${id}/dislike`, { method: 'POST',
+            headers: {
+                [header]: token
+            } }).then(() => location.reload());
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        const comment = btn.closest(".comment");
+        comment.querySelector(".like-count").textContent = data.likes;
+        comment.querySelector(".dislike-count").textContent = data.dislikes;
+
+        toggleButtonsState(comment, data.userLiked, data.userDisliked);
+    }
+
+    function toggleButtonsState(comment, liked, disliked) {
+        const likeBtn = comment.querySelector(".btn-like");
+        const dislikeBtn = comment.querySelector(".btn-dislike");
+
+        if (liked) {
+            likeBtn.classList.add("btn-success");
+            likeBtn.classList.remove("btn-outline-success");
+        } else {
+            likeBtn.classList.remove("btn-success");
+            likeBtn.classList.add("btn-outline-success");
+        }
+
+        if (disliked) {
+            dislikeBtn.classList.add("btn-danger");
+            dislikeBtn.classList.remove("btn-outline-danger");
+        } else {
+            dislikeBtn.classList.remove("btn-danger");
+            dislikeBtn.classList.add("btn-outline-danger");
+        }
+    }
+
+
+    document.addEventListener('click', function(e){
+        const likeBtn = e.target.closest('.btn-like');
+        if (likeBtn && !likeBtn.getAttribute('data-handled')) {
+            likeMessage(likeBtn);
+            likeBtn.setAttribute('data-handled', '1');
+        }
+        const dislikeBtn = e.target.closest('.btn-dislike');
+        if (dislikeBtn && !dislikeBtn.getAttribute('data-handled')) {
+            dislikeMessage(dislikeBtn);
+            dislikeBtn.setAttribute('data-handled', '1');
+        }
     });
 
-    function send() {
-        const input = document.getElementById('messageInput');
-        const text = input.value.trim();
-        if (!text) return;
-        const payload = { sender: username, content: text };
-        stompClient.send('/app/discussions/' + discussionId + '/send', {}, JSON.stringify(payload));
-        input.value = '';
+    function escapeHtml(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        return String(unsafe)
+            .replaceAll('&','&amp;')
+            .replaceAll('<','&lt;')
+            .replaceAll('>','&gt;')
+            .replaceAll('"','&quot;')
+            .replaceAll("'", '&#039;');
     }
+
 </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Discussions</title>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-</head>
-<body>
-<div class="container mt-4">
-    <h1>Список обсуждений</h1>
-    <div th:each="discussion : ${discussions}" class="mb-3">
-        <h3>
-            <a th:href="@{/discussions/{id}(id=${discussion.id})}" th:text="${discussion.title}">Discussion Title</a>
-        </h3>
-        <p th:text="${discussion.description}">Description</p>
-        <small>Автор: <span th:text="${discussion.author.username}">author</span>, создано: <span th:text="${#temporals.format(discussion.createdAt, 'yyyy-MM-dd HH:mm')}">date</span></small>
-    </div>
-</div>
+
+</main>
 </body>
 </html>

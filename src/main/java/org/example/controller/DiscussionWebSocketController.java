@@ -20,12 +20,13 @@ public class DiscussionWebSocketController {
     @MessageMapping("/discussions/{id}/send")
     public void receiveMessage(@DestinationVariable Long id, ChatMessage msg, Principal principal) {
         String username = (principal != null) ? principal.getName() : msg.getSender();
-        Message m = discussionService.addMessage(id, msg.getContent(), username);
+        Message m = discussionService.addMessage(id, msg.getContent(), username, msg.getParentId());
         OutgoingMessageDto out = new OutgoingMessageDto(
                 m.getId(),
                 m.getContent(),
                 m.getSender().getUsername(),
-                m.getCreatedAt()
+                m.getCreatedAt(),
+                m.getParent() != null ? m.getParent().getId() : null
         );
         template.convertAndSend("/topic/discussions/" + id, out);
     }

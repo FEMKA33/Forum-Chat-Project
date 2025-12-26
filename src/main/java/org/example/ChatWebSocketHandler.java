@@ -25,17 +25,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Long discussionId = extractDiscussionId(session);
 
-        // Парсим входящее сообщение
         Map<String, String> incoming = objectMapper.readValue(message.getPayload(), Map.class);
 
-        // Формируем стандартный JSON для фронта
         Map<String, String> outgoing = new HashMap<>();
-        outgoing.put("sender", "User"); // Можно заменить на авторизованного пользователя, если есть
+        outgoing.put("sender", "User");
         outgoing.put("content", incoming.get("content"));
 
         String json = objectMapper.writeValueAsString(outgoing);
 
-        // Рассылаем всем участникам этой дискуссии
         for (WebSocketSession ws : sessions.get(discussionId)) {
             if (ws.isOpen()) {
                 ws.sendMessage(new TextMessage(json));

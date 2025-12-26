@@ -26,4 +26,14 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Discussion discussion;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Message parent;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int likes = 0;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private int dislikes = 0;
 }

@@ -21,4 +21,14 @@ public class DiscussionDto {
         this.author = author;
         this.createdAt = createdAt;
     }
+
+    public static DiscussionDto fromEntity(Discussion discussion) {
+        return new DiscussionDto(
+                discussion.getId(),
+                discussion.getTitle(),
+                discussion.getDescription(),
+                discussion.getAuthor(),
+                discussion.getCreatedAt()
+        );
+    }
 }
